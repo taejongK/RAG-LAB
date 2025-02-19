@@ -44,6 +44,7 @@ class ChatbotRepository:
         사용자와 봇의 대화 내용을 저장하는 메서드.
         """
         with SessionLocal() as db:  # 필요한 순간에만 세션을 생성(자동 닫힘)
+            print('저장됨', data['uuid'])
             new_chat = ChatHistory(
                 uuid=data["uuid"],
                 question=data["question"],

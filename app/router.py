@@ -43,7 +43,7 @@ async def request_chatbot_response(request: RequestResponse):
     response:
         uuid: uuid
         response: 응답
-        response_timestamp: 응답 시간간
+        response_timestamp: 응답 시간
     '''
     if request.uuid not in uuid2room:
         raise HTTPException(status_code=400, detail="uuid does not exist")

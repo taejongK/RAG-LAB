@@ -2,17 +2,17 @@ import streamlit as st
 import requests
 import uuid
 
+from main import *
 
 ############################# 챗봇 생성 #############################
 # uuid 생성
 uuid = str(uuid.uuid4()) # 임시생성 uuid
-print(uuid)
 
 # 새션 만들기
 session_url = f"http://127.0.0.1:8000/chatbot/create/{uuid}"
 params = {"uuid":uuid}
 session = requests.post(session_url, json=params)
-print(session) # 결과 확인
+print("session result: ",session.json()['uuid'])
 
 ############################# 챗팅 페이지 #############################
 # 페이지 제목
@@ -38,7 +38,7 @@ if user_input:
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    ##### 간단한 응답 예제 (실제 AI 모델과 연동 가능) ##### LLM 모듈 들어가는 자리리
+    ##### 간단한 응답 예제 (실제 AI 모델과 연동 가능) #####
     answer_url = f"http://127.0.0.1:8000/chatbot/response/{uuid}"
     params = {"uuid":uuid, "query": user_input}
     
@@ -46,7 +46,7 @@ if user_input:
     bot_response = answer.json()['response']
     print('bot_response: ',bot_response)
 
-    ######################################################## 
+    ########################################################
 
     # 챗봇 응답을 상태에 추가
     st.session_state.messages.append(
