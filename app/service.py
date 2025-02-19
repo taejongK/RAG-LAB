@@ -40,6 +40,11 @@ class SampleCreateResponseService:
             "question_timestamp": question_timestamp,
             "response_timestamp": response_timestamp
         })
+        
+        history = self.repo.get_history()
+        print('history: ', len(history))
+        for chat in history:
+            print(f"ID: {chat.id}, UUID: {chat.uuid}, 질문: {chat.question}, 응답: {chat.response}")
 
         return {
             "uuid": uuid,

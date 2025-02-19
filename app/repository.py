@@ -1,4 +1,4 @@
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base, scoped_session
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, func
 from datetime import datetime
 import time
@@ -10,8 +10,13 @@ database_path = os.path.join(parent_path, 'database')  # db path
 conversation_database_path = os.path.join(
     database_path, 'conversation')  # conversation db 저장소
 
+# conversation 디렉터리 생성 및 권한 설정
+os.makedirs(conversation_database_path, exist_ok=True)  # 디렉터리 없으면 생성
+os.chmod(conversation_database_path, 0o777)  # 디렉터리에 전체 권한 부여
+
+
 # 데이터베이스 설정
-date = datetime.now().strftime("%Y-%m-%d")
+date = datetime.now().strftime("%Y-%m-%d, %H-%M-%S")
 conversation_db_name = f"conversation_{date}.db"
 conversation_save_path = os.path.join(
     conversation_database_path, conversation_db_name)
@@ -19,6 +24,9 @@ DATABASE_URL = f"sqlite:///{conversation_save_path}"
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# scoped session: thread-safe
+Session = scoped_session(SessionLocal)
 
 Base = declarative_base()
 
@@ -39,12 +47,13 @@ class ChatHistory(Base):
 
 
 class ChatbotRepository:
+    
     def save_conversation(self, data: dict):
         """
         사용자와 봇의 대화 내용을 저장하는 메서드.
         """
         with SessionLocal() as db:  # 필요한 순간에만 세션을 생성(자동 닫힘)
-            print('저장됨', data['uuid'])
+
             new_chat = ChatHistory(
                 uuid=data["uuid"],
                 question=data["question"],
@@ -53,7 +62,12 @@ class ChatbotRepository:
                 response_timestamp=data["response_timestamp"],
             )
             db.add(new_chat)  # db에 추가
+            # db.flush()
             db.commit()  # db 저장
+            # db.refresh(new_chat)
+            print(f'데이터 추가: {new_chat.uuid} {new_chat.question} {new_chat.response}')
+            print(Base.metadata.create_all(engine))
+
 
     def get_history(self):
         """
