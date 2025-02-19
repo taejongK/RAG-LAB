@@ -16,13 +16,13 @@ os.chmod(conversation_database_path, 0o777)  # 디렉터리에 전체 권한 부
 
 
 # 데이터베이스 설정
-date = datetime.now().strftime("%Y-%m-%d, %H-%M-%S")
+date = datetime.now().strftime("%Y-%m-%d")
 conversation_db_name = f"conversation_{date}.db"
 conversation_save_path = os.path.join(
     conversation_database_path, conversation_db_name)
 DATABASE_URL = f"sqlite:///{conversation_save_path}"
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False}, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # scoped session: thread-safe
@@ -67,7 +67,7 @@ class ChatbotRepository:
             # db.refresh(new_chat)
             print(f'데이터 추가: {new_chat.uuid} {new_chat.question} {new_chat.response}')
             print(Base.metadata.create_all(engine))
-
+            print('저장 완료')
 
     def get_history(self):
         """

@@ -5,15 +5,18 @@ import uuid
 from main import *
 
 ############################# 챗봇 생성 #############################
-# uuid 생성
-uuid = str(uuid.uuid4())  # 임시생성 uuid
+if "uuid" not in st.session_state:
+    # uuid 생성
+    uuid = str(uuid.uuid4())  # 임시생성 uuid
+    st.session_state.uuid = uuid
 
-# 새션 만들기
-session_url = f"http://127.0.0.1:8000/chatbot/create/{uuid}"
-params = {"uuid": uuid}
-session = requests.post(session_url, json=params)
-print("session result: ", session.json()['uuid'])
-
+    # 새션 만들기
+    session_url = f"http://127.0.0.1:8000/chatbot/create/{uuid}"
+    params = {"uuid": uuid}
+    session = requests.post(session_url, json=params)
+    print("session result: ", session.json()['uuid'])
+    
+uuid = st.session_state.uuid
 ############################# 챗팅 페이지 #############################
 # 페이지 제목
 st.title("RAG ChatBot")
