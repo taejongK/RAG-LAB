@@ -4,9 +4,10 @@ from datetime import datetime
 import time
 import os
 
+
 current_path = os.getcwd()  # 현재 경로
 parent_path = os.path.dirname(current_path)  # 상위 경로 -> project root
-database_path = os.path.join(parent_path, 'database')  # db path
+database_path = os.path.join(os.getenv("ROOT_PATH"), 'database')  # db path
 conversation_database_path = os.path.join(
     database_path, 'conversation')  # conversation db 저장소
 
