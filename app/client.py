@@ -42,7 +42,7 @@ if user_input:
         st.markdown(user_input)
 
     ##### 간단한 응답 예제 (실제 AI 모델과 연동 가능) #####
-    answer_url = f"http://127.0.0.1:8000/chatbot/response/{uuid}"
+    answer_url = f"http://127.0.0.1:8000/chatbot/{uuid}"
     params = {"uuid": uuid, "query": user_input}
 
     answer = requests.post(answer_url, json=params)

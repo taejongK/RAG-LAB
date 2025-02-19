@@ -36,7 +36,7 @@ async def request_create_chatbot(request: CreateChatBot):
     return {"uuid": request.uuid, "room": chatbot}
 
 # 챗봇 응답 요청
-@router.post("/chatbot/response/{uuid}")
+@router.post("/chatbot/{uuid}")
 async def request_chatbot_response(request: RequestResponse):
     '''
     uuid: str 를 보내면 해당 uuid 를 가진 방에 챗봇이 응답합니다.
