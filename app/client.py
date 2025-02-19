@@ -6,13 +6,13 @@ from main import *
 
 ############################# 챗봇 생성 #############################
 # uuid 생성
-uuid = str(uuid.uuid4()) # 임시생성 uuid
+uuid = str(uuid.uuid4())  # 임시생성 uuid
 
 # 새션 만들기
 session_url = f"http://127.0.0.1:8000/chatbot/create/{uuid}"
-params = {"uuid":uuid}
+params = {"uuid": uuid}
 session = requests.post(session_url, json=params)
-print("session result: ",session.json()['uuid'])
+print("session result: ", session.json()['uuid'])
 
 ############################# 챗팅 페이지 #############################
 # 페이지 제목
@@ -40,18 +40,18 @@ if user_input:
 
     ##### 간단한 응답 예제 (실제 AI 모델과 연동 가능) #####
     answer_url = f"http://127.0.0.1:8000/chatbot/response/{uuid}"
-    params = {"uuid":uuid, "query": user_input}
-    
+    params = {"uuid": uuid, "query": user_input}
+
     answer = requests.post(answer_url, json=params)
     bot_response = answer.json()['response']
-    print('bot_response: ',bot_response)
+    # print('bot_response: ',bot_response)
 
     ########################################################
 
     # 챗봇 응답을 상태에 추가
     st.session_state.messages.append(
         {"role": "assistant", "content": bot_response})
-    print(st.session_state.messages)
+    # print(st.session_state.messages)
 
     # 챗봇 응답 표시
     with st.chat_message("assistant"):
