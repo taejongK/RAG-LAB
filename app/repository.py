@@ -65,10 +65,7 @@ class ChatbotRepository:
             db.add(new_chat)  # db에 추가
             # db.flush()
             db.commit()  # db 저장
-            # db.refresh(new_chat)
-            print(f'데이터 추가: {new_chat.uuid} {new_chat.question} {new_chat.response}')
-            print(Base.metadata.create_all(engine))
-            print('저장 완료')
+
 
     def get_history(self):
         """
