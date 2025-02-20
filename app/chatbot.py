@@ -1,34 +1,89 @@
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from operator import itemgetter
+
 import os
 from dotenv import load_dotenv
+import pickle
 
 load_dotenv()
 
 
 # 대화 내용 기억하기
-system_prompt = """
-"You are a support agent. 
-Please respond in the same language as the user's input. Detect the language they are using and reply naturally in that language while maintaining clarity and accuracy."
-"""
-prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", system_prompt),
-        MessagesPlaceholder(variable_name="chat_history"),
-        ("user", "{question}"),  # 사용자 입력을 변수로 사용
-    ]
+# system_prompt = """
+# "You are a support agent.
+# Please respond in the same language as the user's input. Detect the language they are using and reply naturally in that language while maintaining clarity and accuracy.
+
+# Answer the question based only on the following context:
+# {context}
+# """
+# prompt = ChatPromptTemplate.from_messages(
+#     [
+#         ("system", system_prompt),
+#         MessagesPlaceholder(variable_name="chat_history"),
+#         ("user", "{question}"),  # 사용자 입력을 변수로 사용
+#     ]
+# )
+
+# 1. 저장된 임베딩 모델 불러오기
+embedding_model_path = "/home/taejong_kim/workspace/rag-lab/database/embedding_model/hf_embedding_model01.pkl"
+vectorstore_path = "/home/taejong_kim/workspace/rag-lab/database/vector_store"
+
+with open(embedding_model_path, "rb") as f:
+    embedding_model = pickle.load(f)
+
+# 2. 저장된 벡터스토어 불러오기
+vectorstore = FAISS.load_local(
+    vectorstore_path, embedding_model, allow_dangerous_deserialization=True)
+
+# 3. retriever 생성
+retriever = vectorstore.as_retriever()
+
+prompt = PromptTemplate.from_template(
+    """"You are a support agent. 
+Please respond in the same language as the user's input. Detect the language they are using and reply naturally in that language while maintaining clarity and accuracy.
+
+If you don't know the answer, just say that you don't know. 
+
+Use the following pieces of retrieved context to answer the question. 
+
+#Previous Chat History:
+{chat_history}
+
+#Question: 
+{question} 
+
+#Context: 
+{context} 
+
+#Answer:"""
 )
 
+# 언어 모델
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest")
+
+# # langchain
+# chain = (
+#     prompt
+#     | llm
+#     | StrOutputParser()
+# )
 
 # langchain
 chain = (
-    prompt
+    {
+        "context": itemgetter("question") | retriever,
+        "question": itemgetter("question"),
+        "chat_history": itemgetter("chat_history"),
+    }
+    | prompt
     | llm
     | StrOutputParser()
 )

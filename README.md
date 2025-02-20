@@ -38,3 +38,15 @@ streamlit run client.py
     - answer: LLM의 답변
     - question_time: 질문 시간
     - answer_time: 답변 시간
+
+
+
+## 3. Model
+### 3.1 Enbedding
+- hugging face -> "jhgan/ko-sroberta-multitask"
+
+### 3.2 LLM
+- google gemini 1.5 pro 
+
+### 3.3 Retriever
+- 미구현현
