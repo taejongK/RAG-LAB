@@ -1,3 +1,7 @@
 *.db
 *.pyc
 .env
+database/*.pdf
+database/embedding_model/*
+database/image/*
+database/vector_store/*
