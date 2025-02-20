@@ -16,7 +16,7 @@ if "uuid" not in st.session_state:
     session = requests.post(session_url, json=params)
     print("session result: ", session.json()['uuid'])
 
-uuid = st.session_state.uuid
+# uuid = st.session_state.uuid
 ############################# 챗팅 페이지 #############################
 # 페이지 제목
 st.title("RAG ChatBot")
@@ -49,13 +49,8 @@ if user_input:
 
     if answer.status_code == 200:
         bot_response = answer.json()['response']
-        # print("answer result:", bot_response)
     else:
         bot_response = f"Error {answer.status_code}: {answer.text}"
-        # print(f"Error {answer.status_code}: {answer.text}")  # 오류 응답을 출력
-
-    # print("answer result: ", answer.json())
-    # bot_response = answer.json()['response']
 
     ########################################################
 
