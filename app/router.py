@@ -23,11 +23,12 @@ class RequestResponse(BaseModel):
 class DeleteChatBot(BaseModel):
     uuid: str # 삭제하고자 하는 ID
 
+
 # 챗봇 생성 요청
 @router.post("/chatbot/create/{uuid}")
 async def request_create_chatbot(request: CreateChatBot):
     '''
-    uuid: str 를 보내면 해당 uuid 를 가진 방을 생성합니다.
+    - uuid: str 를 보내면 해당 uuid 를 가진 방을 생성합니다.
     '''
     if request.uuid in uuid2room:
         raise HTTPException(status_code=400, detail=f"{request.uuid} already exists")
@@ -37,13 +38,13 @@ async def request_create_chatbot(request: CreateChatBot):
 
 # 챗봇 응답 요청
 @router.post("/chatbot/{uuid}")
-async def request_chatbot_response(request: RequestResponse):
+async def request_response_chatbot(request: RequestResponse):
     '''
-    uuid: str 를 보내면 해당 uuid 를 가진 방에 챗봇이 응답합니다.
-    response:
-        uuid: uuid
-        response: 응답
-        response_timestamp: 응답 시간
+    - uuid: str 를 보내면 해당 uuid 를 가진 방에 챗봇이 응답합니다.  
+    - response:
+        - uuid: uuid  
+        - response: 응답  
+        - response_timestamp: 응답 시간  
     '''
     if request.uuid not in uuid2room:
         raise HTTPException(status_code=400, detail="uuid does not exist")
@@ -58,10 +59,10 @@ async def request_chatbot_response(request: RequestResponse):
 @router.post("/chatbot/delete/{uuid}")
 async def request_delete_chatbot(request: DeleteChatBot):
     '''
-    uuid: str 를 보내면 해당 uuid 를 가진 방을 삭제합니다.
+    - uuid: uuid를 보내면 해당 uuid를 가진 방을 삭제합니다.
     '''
     if request.uuid not in uuid2room:
         raise HTTPException(status_code=400, detail="uuid does not exist")
     
     del uuid2room[request.uuid]
-    return {"uuid": request.uuid, "status": "deleted"}
+    return {"uuid": request.uuid, "status": "Deleted"}

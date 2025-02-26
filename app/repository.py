@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker, declarative_base, scoped_session
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, func
+from sqlalchemy import create_engine, Column, Integer, String, Text, JSON
 from datetime import datetime
 import time
 import os
@@ -45,6 +45,7 @@ class ChatHistory(Base):
         String, default=lambda: str(time.time()))  # 질문 시간
     response_timestamp = Column(
         String, default=lambda: str(time.time()))  # 응답 시간
+    response_image_list = Column(JSON, nullable=True) # 이미지 리스트트
 
 
 class ChatbotRepository:
@@ -61,6 +62,7 @@ class ChatbotRepository:
                 response=data["response"],
                 question_timestamp=data["question_timestamp"],
                 response_timestamp=data["response_timestamp"],
+                response_image_list=data["response_image_list"]
             )
             db.add(new_chat)  # db에 추가
             # db.flush()
