@@ -3,6 +3,7 @@ from repository import ChatbotRepository
 from datetime import datetime
 from chatbot import *
 
+
 uuid2room: Dict[str, str] = {}
 
 
@@ -32,17 +33,34 @@ class ChatbotService:
                                            config={"session_id": uuid})
         response_timestamp = int(datetime.now().timestamp())
 
+        img_list = self.get_image_path_list(retrieval, question)
+
         # 저장 코드
         self.repo.save_conversation({
             "uuid": uuid,
             "question": question,
             "response": answer,
             "question_timestamp": question_timestamp,
-            "response_timestamp": response_timestamp
+            "response_timestamp": response_timestamp,
+            'response_image_list': img_list
         })
 
         return {
             "uuid": uuid,
             "response": answer,
-            "response_timestamp": response_timestamp
+            "response_timestamp": response_timestamp,
+            "images": img_list
         }
+
+    def get_image_path_list(self, retrieval, question):
+        """
+        retrieval에서 검색과 관련된 리스트 경로 반환환
+        """
+        img_list = []  # 출력해야할 이미지 리스트트
+
+        for doc in retrieval.invoke(question):
+            img_path = doc.metadata["images"]
+            if len(img_path) > 0:
+                for img in img_path:
+                    img_list.append(img)
+        return img_list

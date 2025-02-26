@@ -5,7 +5,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
-from langchain.embeddings import HuggingFaceEmbeddings
+# from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from operator import itemgetter
 
@@ -44,7 +45,7 @@ vectorstore = FAISS.load_local(
     vectorstore_path, embedding_model, allow_dangerous_deserialization=True)
 
 # 3. retriever 생성
-retriever = vectorstore.as_retriever()
+retrieval = vectorstore.as_retriever()
 
 prompt = PromptTemplate.from_template(
     """"You are a support agent. 
@@ -79,7 +80,7 @@ llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest")
 # langchain
 chain = (
     {
-        "context": itemgetter("question") | retriever,
+        "context": itemgetter("question") | retrieval,
         "question": itemgetter("question"),
         "chat_history": itemgetter("chat_history"),
     }
