@@ -127,20 +127,29 @@ RAG-LAB
 
 ### Repository
 - ChatHistory
-    - id: Primary Key
-    - uuid: ChatBot 인스턴스 별로 부여
-    - question: 사용자의 질문
-    - answer: LLM의 답변
-    - question_time: 질문 시간
-    - answer_time: 답변 시간
+  - id: Primary Key
+  - uuid: ChatBot 인스턴스 별로 부여
+  - question: 사용자의 질문
+  - answer: LLM의 답변
+  - question_time: 질문 시간
+  - answer_time: 답변 시간
+- ChatbotRepository
+  - save_conversation: User와 LLM 의 대화 내용을 저장
+  - get_conversation: User와 LLM 의 대화 내용을 가져옴
 
 ### Chatbot
+- prompt
+  - chat_history: 사용자와 챗봇의 대화 내용 입력
+  - question: 사용자의 질문 입력
+  - context: 사용자의 질문과 관련된 자료 입력
+- llm: ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest") 사용
+- store: session id 별로 대화 내용 저장
 
 
 ## 향후 개발 계획
-- v0.2.0: 2025.03.08 까지
-    - ChatBot 삭제 기능 구현
-    - 의존성 주입 코드 작성
-    - PDF 변환 및 분할 모듈 구현
-    - 이미지 데이터 완결성 개선
-    - chatbot 모듈 코드 리팩토링
+__v0.2.0: 2025.03.08 까지__
+- [ ] ChatBot 삭제 기능 구현
+- [ ] 의존성 주입 코드 작성
+- [ ] PDF 변환 및 분할 모듈 구현
+- [ ] 이미지 데이터 완결성 개선
+- [ ] chatbot 모듈 코드 리팩토링
