@@ -16,23 +16,6 @@ import pickle
 
 load_dotenv()
 
-
-# 대화 내용 기억하기
-# system_prompt = """
-# "You are a support agent.
-# Please respond in the same language as the user's input. Detect the language they are using and reply naturally in that language while maintaining clarity and accuracy.
-
-# Answer the question based only on the following context:
-# {context}
-# """
-# prompt = ChatPromptTemplate.from_messages(
-#     [
-#         ("system", system_prompt),
-#         MessagesPlaceholder(variable_name="chat_history"),
-#         ("user", "{question}"),  # 사용자 입력을 변수로 사용
-#     ]
-# )
-
 # 1. 저장된 임베딩 모델 불러오기
 embedding_model_path = "/home/taejong_kim/workspace/rag-lab/database/embedding_model/hf_embedding_model01.pkl"
 vectorstore_path = "/home/taejong_kim/workspace/rag-lab/database/vector_store"
@@ -70,14 +53,6 @@ Use the following pieces of retrieved context to answer the question.
 # 언어 모델
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest")
 
-# # langchain
-# chain = (
-#     prompt
-#     | llm
-#     | StrOutputParser()
-# )
-
-# langchain
 chain = (
     {
         "context": itemgetter("question") | retrieval,
