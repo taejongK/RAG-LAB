@@ -8,7 +8,7 @@
 - Fast API로 언어 모델 API 개발
 - Streamlit으로 웹 페이지 개발
 
-![image](images/chatbot_chat_result.png)
+![image](images/chatbot_chat_result_masked.png)
 
 ## 기술 스텍
 - Python                       3.12.3
