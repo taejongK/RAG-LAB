@@ -34,6 +34,7 @@ pip install -r requirements.txt
 ```
 
 ### 실행 방법
+1. chatbot 실행방법
 - router 실행
 ```
 cd app
@@ -48,6 +49,12 @@ streamlit run app.py --server.fileWatcherType none
 ```
 - Streamlit이 파일을 감시하면서 발생하는 문제이므로, 이 기능을 비활성화하면 해결될 가능성이 큼
 
+2. pdf vectorDB 저장
+- vectorDB에 저장할 PDF 문서를 `database`폴더에 저장장
+- `project root path`에서 다음 명령어 실행 
+```
+python pdf_to_vector.py
+```
 
 ## API 문서
 - router 실행 후 아래 주소로 접속
@@ -149,7 +156,5 @@ RAG-LAB
 ## 향후 개발 계획
 __v0.2.0: 2025.03.08 까지__
 - [ ] ChatBot 삭제 기능 구현
-- [ ] 의존성 주입 코드 작성
-- [ ] PDF 변환 및 분할 모듈 구현
-- [ ] 이미지 데이터 완결성 개선
+- [x] PDF 변환 및 분할 모듈 구현
 - [ ] chatbot 모듈 코드 리팩토링

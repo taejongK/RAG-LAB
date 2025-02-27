@@ -52,7 +52,6 @@ if user_input:
     else:
         bot_response = f"Error {answer.status_code}: {answer.text}"
     
-    # image_path = "/home/taejong_kim/workspace/rag-lab/database/image/BA_사용메뉴얼_분석가.pdf-6-0.png"
     image_list = answer.json()['images']
     print('image_list:', image_list)
 
@@ -62,6 +61,7 @@ if user_input:
     st.session_state.messages.append(
         {"role": "assistant", "content": bot_response})
     
+    root_path = '/home/taejong_kim/workspace/rag-lab/'
     if len(image_list) > 0:
         for image_path in image_list:
             st.image(image_path, use_container_width=True)
