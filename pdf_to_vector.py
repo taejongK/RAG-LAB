@@ -67,3 +67,6 @@ if __name__ == "__main__":
     with open(EMBEDDING_MODEL_PATH, "wb") as f:
         pickle.dump(hf, f)
     print("Complete save data")    
+    
+    
+# test git flow
