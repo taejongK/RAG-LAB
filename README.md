@@ -90,9 +90,9 @@ http://127.0.0.1:8000/docs
 ```
 ## 사용방법
 ### 스크린샷
-![image](images/chatbot_chat_result.png)
-![image](images/chatbot_chat_result02.png)
-![image](images/chatbot_chat_result03.png)
+![image](images/chatbot_chat_result_masked.png)
+![image](images/chatbot_chat_result_masked02.png)
+![image](images/chatbot_chat_result_masked03.png)
 
 ### 주요 기능 설명
 1. 질문에 대한 답변
