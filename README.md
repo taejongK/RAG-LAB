@@ -33,28 +33,43 @@ git clone https://github.com/taejongK/RAG-LAB.git
 pip install -r requirements.txt
 ```
 
+### 실행 환경
+- Windows 11 WSL2
+
 ### 실행 방법
-1. chatbot 실행방법
-- router 실행
-```
-cd app
-python main.py
-```
+0. 실행전 api와 pdf 파일 준비
+   - root directory에 `.env` 파일 생성
+   - 아래 내용 추가
+   ```
+   HUGGINGFACEHUB_API_TOKEN = "API_TOKEN"
+   GOOGLE_API_KEY = "API_TOKEN"
 
-다른 터미널 창에서 아래 명령어를 실행합니다.
-- client page 실행
-```
-cd app
-streamlit run app.py --server.fileWatcherType none  
-```
-- Streamlit이 파일을 감시하면서 발생하는 문제이므로, 이 기능을 비활성화하면 해결될 가능성이 큼
+   VECTORSTORE_PATH = "API_TOKEN"
+   EMBEDDING_MODEL_PATH = "API_TOKEN"
+   ```
 
-2. pdf vectorDB 저장
-- vectorDB에 저장할 PDF 문서를 `database`폴더에 저장장
-- `project root path`에서 다음 명령어 실행 
-```
-python pdf_to_vector.py
-```
+1. pdf vectorDB 저장
+   - vectorDB에 저장할 PDF 문서를 `database`폴더에 저장
+   - `project root path`에서 다음 명령어 실행 
+   ```
+   python pdf_to_vector.py
+   ```
+
+2. chatbot 실행방법
+   - router 실행
+   ```
+   cd app
+   python main.py
+   ```
+
+   다른 터미널 창에서 아래 명령어를 실행합니다.
+   - client page 실행
+   ```
+   cd app
+   streamlit run app.py --server.fileWatcherType none  
+   ```
+   - Streamlit이 파일을 감시하면서 발생하는 문제이므로, 이 기능을 비활성화하면 해결될 가능성이 큼
+
 
 ## API 문서
 - router 실행 후 아래 주소로 접속
@@ -67,12 +82,12 @@ http://127.0.0.1:8000/docs
 
 ### Request Response Chatbot
 - /chatbot/{uuid}
-```
-{
-  "uuid": "string",
-  "query": "string"
-}
-```
+  ```
+  {
+    "uuid": "string",
+    "query": "string"
+  }
+  ```
 - query: 사용자의 질문
 - method: POST
 
@@ -81,32 +96,32 @@ http://127.0.0.1:8000/docs
 - uuid(Session ID)를 보내면 존재하는 ChatBot을 삭제합니다.
 - method: DELETE
 - 프로토 타입에서는 사용하지 않고 있습니다.
-```
-{
-  "uuid": "string",
-  "query": "string",
-  "answer": "string"
-}
-```
+  ```
+  {
+    "uuid": "string",
+    "query": "string",
+    "answer": "string"
+  }
+  ```
 ## 사용방법
 ### 스크린샷
-![image](images/chatbot_chat_result_masked.png)
-![image](images/chatbot_chat_result_masked02.png)
-![image](images/chatbot_chat_result_masked03.png)
+  ![image](images/chatbot_chat_result_masked.png)
+  ![image](images/chatbot_chat_result_masked02.png)
+  ![image](images/chatbot_chat_result_masked03.png)
 
 ### 주요 기능 설명
 1. 질문에 대한 답변
-- LLM을 사용해 사용자의 질문에 답변
+   - LLM을 사용해 사용자의 질문에 답변
 
 2. 이미지 출력
-- 질문과 관련된 이미지 출력
-- 원본 PDF를 markdown 형식으로 변환하여 해당 이미지를 이미지 경로로 변환
-- 문서 내용과 함께 `image_path`를 `meta data`로 저장
-- 질문과 관련된 내용이 검색 될 때, `meta data`에 저장된 이미지를 출력
+   - 질문과 관련된 이미지 출력
+   - 원본 PDF를 markdown 형식으로 변환하여 해당 이미지를 이미지 경로로 변환
+   - 문서 내용과 함께 `image_path`를 `meta data`로 저장
+   - 질문과 관련된 내용이 검색 될 때, `meta data`에 저장된 이미지를 출력
 
 3. 대화 내용 저장
-- 사용자의 질문과 답변을 저장하여 추후 분석에 사용
-- `ChatHistory` 테이블에 저장
+   - 사용자의 질문과 답변을 저장하여 추후 분석에 사용
+   - `ChatHistory` 테이블에 저장
 
 ## 구조 및 아키텍쳐
 ```
