@@ -1,3 +1,4 @@
+from pathlib import Path
 import pymupdf4llm
 import re
 from langchain.schema import Document
@@ -10,7 +11,6 @@ import pickle
 
 load_dotenv()
 
-from pathlib import Path
 
 ## PATH ##
 ROOT = os.getcwd()
@@ -53,18 +53,21 @@ if __name__ == "__main__":
     for md in splited_markdonw:
         doc = extract_images_and_create_documents(md)
         docs4md.append(doc)
-        
+
     print("Complete convert PDF2Markdown")
-    
+
     hf = HuggingFaceEmbeddings(
         model_name='jhgan/ko-sroberta-multitask')  # embedding model
 
     vectorstore = FAISS.from_documents(docs4md, embedding=hf)  # vector store
     retriever = vectorstore.as_retriever()
-    
+
     vectorstore.save_local(VECTORSTORE_PATH)
+
+    # create embedding model path
+    if not os.path.exists(os.path.dirname(EMBEDDING_MODEL_PATH)):
+        os.makedirs(os.path.dirname(EMBEDDING_MODEL_PATH))
 
     with open(EMBEDDING_MODEL_PATH, "wb") as f:
         pickle.dump(hf, f)
-    print("Complete save data")    
-    
+    print("Complete save data")
