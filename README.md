@@ -43,14 +43,12 @@ pip install -r requirements.txt
    ```
    HUGGINGFACEHUB_API_TOKEN = "API_TOKEN"
    GOOGLE_API_KEY = "API_TOKEN"
-
-   VECTORSTORE_PATH = "API_TOKEN"
-   EMBEDDING_MODEL_PATH = "API_TOKEN"
    ```
 
 1. pdf vectorDB 저장
+   - `root directory`에 `database` 폴더 생성
    - vectorDB에 저장할 PDF 문서를 `database`폴더에 저장
-   - `project root path`에서 다음 명령어 실행 
+   - `project root directory`에서 다음 명령어 실행 
    ```
    python pdf_to_vector.py
    ```
