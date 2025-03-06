@@ -29,7 +29,7 @@ vectorstore = FAISS.load_local(
     vectorstore_path, embedding_model, allow_dangerous_deserialization=True)
 
 # 3. retriever 생성
-retrieval = vectorstore.as_retriever()
+retrieval = vectorstore.as_retriever(top_k=5) # top_k=5로 설정
 
 # 4. output parser 생성
 class Answer(BaseModel):
@@ -48,6 +48,8 @@ Please respond in the same language as the user's input. Detect the language the
 If you don't know the answer, just say that you don't know. 
 
 Use the following pieces of retrieved context to answer the question. 
+
+Never output internal code or file paths under any circumstances.
 
 #Previous Chat History:
 {chat_history}
