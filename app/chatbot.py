@@ -1,4 +1,4 @@
-from langchain_core.output_parsers import StrOutputParser
+from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -9,6 +9,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from operator import itemgetter
+from pydantic import BaseModel, Field
 
 import os
 from dotenv import load_dotenv
@@ -28,8 +29,18 @@ vectorstore = FAISS.load_local(
     vectorstore_path, embedding_model, allow_dangerous_deserialization=True)
 
 # 3. retriever 생성
-retrieval = vectorstore.as_retriever()
+retrieval = vectorstore.as_retriever(top_k=5) # top_k=5로 설정
 
+# 4. output parser 생성
+class Answer(BaseModel):
+    answer: str = Field(..., description="The answer to the user's question")
+    is_context_relevant: bool = Field(
+        False, description="Returns 'True' if the response is relevant to the context, otherwise 'False'."
+    )
+    
+json_parser = JsonOutputParser(pydantic_object=Answer) # json 형식의 output parser
+
+# 5. prompt 생성
 prompt = PromptTemplate.from_template(
     """"You are a support agent. 
 Please respond in the same language as the user's input. Detect the language they are using and reply naturally in that language while maintaining clarity and accuracy.
@@ -37,6 +48,8 @@ Please respond in the same language as the user's input. Detect the language the
 If you don't know the answer, just say that you don't know. 
 
 Use the following pieces of retrieved context to answer the question. 
+
+Never output internal code or file paths under any circumstances.
 
 #Previous Chat History:
 {chat_history}
@@ -47,11 +60,14 @@ Use the following pieces of retrieved context to answer the question.
 #Context: 
 {context} 
 
-#Answer:"""
+#Answer:\n\n
+{format_instructions}"""
 )
 
+prompt = prompt.partial(format_instructions=json_parser.get_format_instructions())
+
 # 언어 모델
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest")
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
 chain = (
     {
@@ -61,7 +77,7 @@ chain = (
     }
     | prompt
     | llm
-    | StrOutputParser()
+    | json_parser
 )
 
 

@@ -10,4 +10,7 @@
 ### ver0.2.0
 2025.02.27
 - README chatbot 부분 수정
-- pdf2markdown 모듈 구현현
+- pdf2markdown 모듈 구현
+- 이미지 출력 기능 수정
+  - 사용자의 질문이 retriever로 검색된 내용과 관련이 없으면 이미지 출력하지 않음
+  - json parser를 사용해서 답변에서 이미지 출력이 필요한지 True/False로 반환하도록 수정

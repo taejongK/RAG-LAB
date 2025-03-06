@@ -29,11 +29,17 @@ class ChatbotService:
         # 질문 시간, 정확히는 질문이 넘어온 시간
         question_timestamp = int(datetime.now().timestamp())
 
-        answer = chain_with_history.invoke({"question": question},
-                                           config={"session_id": uuid})
+        response = chain_with_history.invoke({"question": question},
+                                             config={"session_id": uuid})
+        answer = response['answer']
+        is_context_relevant = response['is_context_relevant']  # 이미지가 필요한가 아닌가?
+
         response_timestamp = int(datetime.now().timestamp())
 
-        img_list = self.get_image_path_list(retrieval, question)
+        if is_context_relevant:
+            img_list = self.get_image_path_list(retrieval, question)
+        else:
+            img_list = []
 
         # 저장 코드
         self.repo.save_conversation({
@@ -49,12 +55,13 @@ class ChatbotService:
             "uuid": uuid,
             "response": answer,
             "response_timestamp": response_timestamp,
-            "images": img_list
+            "images": img_list,
+            "is_context_relevant": is_context_relevant
         }
 
     def get_image_path_list(self, retrieval, question):
         """
-        retrieval에서 검색과 관련된 리스트 경로 반환환
+        retrieval에서 검색과 관련된 리스트 경로 반환
         """
         img_list = []  # 출력해야할 이미지 리스트트
 
