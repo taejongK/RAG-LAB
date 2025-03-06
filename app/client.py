@@ -45,15 +45,15 @@ if user_input:
     answer_url = f"http://127.0.0.1:8000/chatbot/{st.session_state.uuid}"
     params = {"uuid": st.session_state.uuid, "query": user_input}
 
-    answer = requests.post(answer_url, json=params)
+    response = requests.post(answer_url, json=params)
 
-    if answer.status_code == 200:
-        bot_response = answer.json()['response']
+    if response.status_code == 200:
+        bot_response = response.json()['response']
     else:
-        bot_response = f"Error {answer.status_code}: {answer.text}"
+        bot_response = f"Error {response.status_code}: {response.text}"
     
-    image_list = answer.json()['images']
-    print('image_list:', image_list)
+    image_list = response.json()['images']
+    is_context_relevant = response.json()['is_context_relevant'] # 이미지 출력 여부
 
     ########################################################
 
@@ -62,7 +62,7 @@ if user_input:
         {"role": "assistant", "content": bot_response})
     
     root_path = '/home/taejong_kim/workspace/rag-lab/'
-    if len(image_list) > 0:
+    if len(image_list) and is_context_relevant > 0:
         for image_path in image_list:
             st.image(image_path, use_container_width=True)
 

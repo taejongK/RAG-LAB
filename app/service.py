@@ -29,10 +29,13 @@ class ChatbotService:
         # 질문 시간, 정확히는 질문이 넘어온 시간
         question_timestamp = int(datetime.now().timestamp())
 
-        answer = chain_with_history.invoke({"question": question},
+        response = chain_with_history.invoke({"question": question},
                                            config={"session_id": uuid})
+        answer = response['answer']
+        is_context_relevant = response['is_context_relevant'] # 이미지가 필요한가 아닌가?
+        
         response_timestamp = int(datetime.now().timestamp())
-
+ 
         img_list = self.get_image_path_list(retrieval, question)
 
         # 저장 코드
@@ -49,7 +52,8 @@ class ChatbotService:
             "uuid": uuid,
             "response": answer,
             "response_timestamp": response_timestamp,
-            "images": img_list
+            "images": img_list,
+            "is_context_relevant": is_context_relevant
         }
 
     def get_image_path_list(self, retrieval, question):
