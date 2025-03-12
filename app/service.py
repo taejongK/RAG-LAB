@@ -30,7 +30,7 @@ class ChatbotService:
         question_timestamp = int(datetime.now().timestamp())
 
         response = await chain_with_history.ainvoke({"question": question},
-                                             config={"session_id": uuid})
+                                                    config={"session_id": uuid})
         answer = response['answer']
         is_context_relevant = response['is_context_relevant']  # 이미지가 필요한가 아닌가?
 
