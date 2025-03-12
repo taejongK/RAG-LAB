@@ -23,13 +23,13 @@ class ChatbotService:
     def __init__(self):
         self.repo = ChatbotRepository()  # 대화 내용 저장소 인스턴스 생성
 
-    def create_response(self, request: dict) -> dict:
+    async def create_response(self, request: dict) -> dict:
         uuid = request.uuid
         question = request.query
         # 질문 시간, 정확히는 질문이 넘어온 시간
         question_timestamp = int(datetime.now().timestamp())
 
-        response = chain_with_history.invoke({"question": question},
+        response = await chain_with_history.ainvoke({"question": question},
                                              config={"session_id": uuid})
         answer = response['answer']
         is_context_relevant = response['is_context_relevant']  # 이미지가 필요한가 아닌가?
