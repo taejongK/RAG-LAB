@@ -51,7 +51,7 @@ async def request_response_chatbot(request: RequestResponse):
 
     chatbot = uuid2room[request.uuid]
     
-    response = chatbot.create_response(request)
+    response = await chatbot.create_response(request)
 
     return response
 
