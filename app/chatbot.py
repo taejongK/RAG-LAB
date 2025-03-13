@@ -11,6 +11,9 @@ from langchain_community.vectorstores import FAISS
 from operator import itemgetter
 from pydantic import BaseModel, Field
 
+from query_generator import custom_multiquery_chain
+from langchain.retrievers.multi_query import MultiQueryRetriever
+
 import os
 from dotenv import load_dotenv
 import pickle
@@ -28,8 +31,11 @@ with open(embedding_model_path, "rb") as f:
 vectorstore = FAISS.load_local(
     vectorstore_path, embedding_model, allow_dangerous_deserialization=True)
 
-# 3. retriever 생성
-retrieval = vectorstore.as_retriever(top_k=5) # top_k=5로 설정
+# 3. retriever 생성 
+# retrieval = vectorstore.as_retriever(top_k=5) # top_k=5로 설정
+retriever = MultiQueryRetriever.from_llm(
+    llm=custom_multiquery_chain, retriever=vectorstore.as_retriever()
+)
 
 # 4. output parser 생성
 class Answer(BaseModel):
@@ -41,13 +47,17 @@ class Answer(BaseModel):
 json_parser = JsonOutputParser(pydantic_object=Answer) # json 형식의 output parser
 
 # 5. prompt 생성
-prompt = PromptTemplate.from_template(
-    """"You are a support agent. 
-Please respond in the same language as the user's input. Detect the language they are using and reply naturally in that language while maintaining clarity and accuracy.
+format_instructions = json_parser.get_format_instructions()
+
+prompt = PromptTemplate(
+    input_variables=["chat_history", "question", "context"],
+    template="""You are a support agent. 
+Please respond in the same language as the user's input. 
+Detect the language they are using and reply naturally in that language while maintaining clarity and accuracy.
 
 If you don't know the answer, just say that you don't know. 
 
-Use the following pieces of retrieved context to answer the question. 
+Use the following retrieved context to answer the question. 
 
 Never output internal code or file paths under any circumstances.
 
@@ -61,17 +71,17 @@ Never output internal code or file paths under any circumstances.
 {context} 
 
 #Answer:\n\n
-{format_instructions}"""
-)
+{format_instructions}
+"""
+).partial(format_instructions=format_instructions)
 
-prompt = prompt.partial(format_instructions=json_parser.get_format_instructions())
 
 # 언어 모델
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
 chain = (
     {
-        "context": itemgetter("question") | retrieval,
+        "context": itemgetter("question") | retriever,
         "question": itemgetter("question"),
         "chat_history": itemgetter("chat_history"),
     }
@@ -100,3 +110,9 @@ chain_with_history = RunnableWithMessageHistory(
     input_messages_key="question",  # 사용자의 질문이 템플릿 변수에 들어갈 key
     history_messages_key="chat_history",  # 기록 메시지의 키
 )
+
+if __name__ == "__main__":
+    question = "데이터를 업로드 하는 방법을 알려줘줘."
+    response = chain_with_history.invoke({"question": question, "chat_history":[]}, config={"session_id": "test"})
+    print(response)
+    print(store)

@@ -37,7 +37,7 @@ class ChatbotService:
         response_timestamp = int(datetime.now().timestamp())
 
         if is_context_relevant:
-            img_list = self.get_image_path_list(retrieval, question)
+            img_list = self.get_image_path_list(retriever, question)
         else:
             img_list = []
 
