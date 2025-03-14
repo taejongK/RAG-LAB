@@ -2,6 +2,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain_ollama import ChatOllama
 
 # 프롬프트 템플릿을 정의합니다.(5개의 질문을 생성하도록 프롬프트를 작성하였습니다)
 gen_query_prompt = PromptTemplate.from_template(
@@ -18,6 +19,7 @@ Your response should be a list of values separated by new lines, eg: `foo\nbar\n
 )
 
 llm4query = ChatGoogleGenerativeAI(model="gemini-1.5-flash-8b")
+# llm4query = ChatOllama(model='exaone3.5:2.4b')
 
 custom_multiquery_chain = (
     {"question": RunnablePassthrough()} 

@@ -1,7 +1,8 @@
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
-from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_ollama import ChatOllama
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
@@ -97,7 +98,8 @@ Never output internal code or file paths under any circumstances.
 
 
 # 언어 모델
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+# llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+llm = ChatOllama(model='exaone3.5:2.4b')
 
 chain = (
     {
@@ -132,7 +134,7 @@ chain_with_history = RunnableWithMessageHistory(
 )
 
 if __name__ == "__main__":
-    chain.get_graph().print_ascii() # 그래프 출력
+    # chain.get_graph().print_ascii() # 그래프 출력
     
     question = "데이터를 업로드 하는 방법을 알려줘."
     response = chain_with_history.invoke(
