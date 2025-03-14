@@ -14,6 +14,9 @@ from pydantic import BaseModel, Field
 from query_generator import custom_multiquery_chain
 from langchain.retrievers.multi_query import MultiQueryRetriever
 
+from reranker import CustomColBERTCompressor
+from langchain_core.runnables import RunnableLambda
+
 import os
 from dotenv import load_dotenv
 import pickle
@@ -31,20 +34,37 @@ with open(embedding_model_path, "rb") as f:
 vectorstore = FAISS.load_local(
     vectorstore_path, embedding_model, allow_dangerous_deserialization=True)
 
-# 3. retriever 생성 
+# 3. retriever 생성
 # retrieval = vectorstore.as_retriever(top_k=5) # top_k=5로 설정
 retriever = MultiQueryRetriever.from_llm(
     llm=custom_multiquery_chain, retriever=vectorstore.as_retriever()
 )
 
+# 3.5 Post retriever: Reranker
+def advanced_retriever(query):
+    '''
+    retriever | reranker를 runnable하게 만들기 위한 방법
+    - TODO: 이 부분은 현재 구조가 일반적인 방법인지는 모르겠음 그래서 추후에 검토가 필요함
+    '''
+    retrieval_result = retriever.invoke(query)
+    return colbert_compressor.compress_documents(retrieval_result, query)
+
+
+model_name = "bert-base-uncased"
+colbert_compressor = CustomColBERTCompressor(model_name, threshold=0.4, top_k=3)  # Reranker 생성
+
 # 4. output parser 생성
+
+
 class Answer(BaseModel):
     answer: str = Field(..., description="The answer to the user's question")
     is_context_relevant: bool = Field(
         False, description="Returns 'True' if the response is relevant to the context, otherwise 'False'."
     )
-    
-json_parser = JsonOutputParser(pydantic_object=Answer) # json 형식의 output parser
+
+
+json_parser = JsonOutputParser(
+    pydantic_object=Answer)  # json 형식의 output parser
 
 # 5. prompt 생성
 format_instructions = json_parser.get_format_instructions()
@@ -81,7 +101,7 @@ llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
 chain = (
     {
-        "context": itemgetter("question") | retriever,
+        "context": itemgetter("question") | RunnableLambda(advanced_retriever),
         "question": itemgetter("question"),
         "chat_history": itemgetter("chat_history"),
     }
@@ -112,7 +132,10 @@ chain_with_history = RunnableWithMessageHistory(
 )
 
 if __name__ == "__main__":
-    question = "데이터를 업로드 하는 방법을 알려줘줘."
-    response = chain_with_history.invoke({"question": question, "chat_history":[]}, config={"session_id": "test"})
+    chain.get_graph().print_ascii() # 그래프 출력
+    
+    question = "데이터를 업로드 하는 방법을 알려줘."
+    response = chain_with_history.invoke(
+        {"question": question, "chat_history": []}, config={"session_id": "test"})
     print(response)
     print(store)
