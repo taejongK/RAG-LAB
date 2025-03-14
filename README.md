@@ -14,6 +14,7 @@
 - Python                       3.12.3
 - fastapi                      0.115.8
 - streamlit                    1.42.1
+- ollama                       0.4.7  
 - langchain                    0.3.18
 - langchain-community          0.3.17
 - langchain-core               0.3.34
@@ -162,7 +163,7 @@ RAG-LAB
   - chat_history: 사용자와 챗봇의 대화 내용 입력
   - question: 사용자의 질문 입력
   - context: 사용자의 질문과 관련된 자료 입력
-- llm: ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest") 사용
+- llm: ~~ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest") 사용~~ -> ollama를 통해 exaone3.5:2.4b 모델 사용
 - store: session id 별로 대화 내용 저장
 
 
